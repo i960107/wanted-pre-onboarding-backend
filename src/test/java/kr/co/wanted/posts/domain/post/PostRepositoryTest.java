@@ -3,14 +3,17 @@ package kr.co.wanted.posts.domain.post;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
+import kr.co.wanted.posts.config.JpaConfig;
 import kr.co.wanted.posts.util.PostTestHelper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
+@Import(JpaConfig.class)
 @Transactional
 class PostRepositoryTest {
     @Autowired
@@ -37,7 +40,9 @@ class PostRepositoryTest {
         //when
         Post post = postRepository.save(givenPost);
 
+        //then
         assertEquals(1, postRepository.count());
+        assertEquals(2, postImageRepository.count());
         assertEquals(1L, post.getId());
         PostTestHelper.assertPost(post, title, content, thumbnailUrl, imageUrls);
     }

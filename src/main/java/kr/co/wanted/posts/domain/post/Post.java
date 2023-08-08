@@ -10,8 +10,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 import kr.co.wanted.posts.domain.BaseEntity;
-import kr.co.wanted.posts.domain.User;
+import kr.co.wanted.posts.domain.user.User;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -38,11 +39,11 @@ public class Post extends BaseEntity {
     private String content;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private List<PostImage> imageUrls = new ArrayList<>();
+    private List<PostImage> images = new ArrayList<>();
 
     private String thumbnailUrl;
 
-    private boolean isDeleted;
+    private boolean enabled;
 
 
     @Builder
@@ -56,13 +57,24 @@ public class Post extends BaseEntity {
         this.authorId = authorId;
         this.author = author;
         this.content = content;
-        imageUrls.forEach(imageUrl -> {
-            this.imageUrls.add(PostImage.builder()
-                    .post(this)
-                    .imageUrl(imageUrl)
-                    .build());
-        });
+        updateImages(imageUrls);
         this.thumbnailUrl = thumbnailUrl;
-        this.isDeleted = false;
+        this.enabled = true;
     }
+
+    public void updateImages(List<String> imageUrls) {
+        if (this.getImages().size() != 0) {
+            this.images.forEach(PostImage::deleteImage);
+        }
+
+        IntStream.rangeClosed(1, imageUrls.size())
+                .forEach(index -> {
+                    this.images.add(PostImage.builder()
+                            .post(this)
+                            .index(index)
+                            .imageUrl(imageUrls.get(index - 1))
+                            .build());
+                });
+    }
+
 }

@@ -27,12 +27,19 @@ public class PostImage extends BaseEntity {
 
     private String imageUrl;
 
-    private boolean isDeleted;
+    private int index;
+
+    private boolean enabled;
 
     @Builder
-    public PostImage(Post post, String imageUrl) {
+    public PostImage(Post post, String imageUrl, int index) {
         this.post = post;
         this.imageUrl = imageUrl;
-        this.isDeleted = false;
+        this.index = index;
+        this.enabled = true;
+    }
+
+    public void deleteImage(){
+        this.enabled = false;
     }
 }
