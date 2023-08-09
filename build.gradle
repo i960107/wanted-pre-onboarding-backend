@@ -1,7 +1,7 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.1.2'
-    id 'io.spring.dependency-management' version '1.1.2'
+    id 'org.springframework.boot' version '2.4.1'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'org.asciidoctor.jvm.convert' version '3.3.2'
 }
 
@@ -9,7 +9,7 @@ group = 'kr.co.wanted'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    sourceCompatibility = '17'
+    sourceCompatibility = '11'
 }
 
 configurations {
@@ -37,15 +37,15 @@ dependencies {
 
     //database, jpa
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'mysql:mysql-connector-java'
+    implementation 'com.h2database:h2'
 
     //view
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 
-    //spring security, oauth
+    //spring security
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
     //test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -54,12 +54,21 @@ dependencies {
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
 
-tasks.named('test') {
-    outputs.dir snippetsDir
+tasks.test {
     useJUnitPlatform()
+    outputs.dir snippetsDir
 }
 
-tasks.named('asciidoctor') {
-    inputs.dir snippetsDir
+tasks.asciidoctor {
     dependsOn test
+    inputs.dir snippetsDir
 }
+
+tasks.bootJar {
+    dependsOn asciidoctor
+    copy {
+        from "${asciidoctor.outputDir}"
+        into "static/docs"
+    }
+}
+
