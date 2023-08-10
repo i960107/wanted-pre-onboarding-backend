@@ -1,0 +1,73 @@
+package kr.co.wanted.posts.config.jwt;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import kr.co.wanted.posts.domain.user.User;
+import kr.co.wanted.posts.web.dto.UserLoginDto;
+import lombok.SneakyThrows;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
+    private final ObjectMapper objectMapper;
+    private final JwtUtil jwtUtil;
+
+    public JwtLoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+        super(authenticationManager);
+        objectMapper = new ObjectMapper();
+        setFilterProcessesUrl("/login");
+        this.jwtUtil = jwtUtil;
+    }
+
+    @Override
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
+            throws AuthenticationException {
+        if (!request.getMethod().equals("POST")) {
+            throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
+        }
+        UserLoginDto loginDto = null;
+        try {
+            loginDto = obtainLoginDto(request);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String username = loginDto.getUsername();
+        username = (username != null) ? username : "";
+        username = username.trim();
+
+        String password = loginDto.getPassword();
+        password = (password != null) ? password : "";
+
+        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
+
+        return this.getAuthenticationManager().authenticate(authRequest);
+    }
+
+    private UserLoginDto obtainLoginDto(HttpServletRequest request) throws IOException {
+        return objectMapper.readValue(request.getInputStream(), UserLoginDto.class);
+    }
+
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            FilterChain chain,
+                                            Authentication authResult) throws IOException, ServletException {
+
+        User user = (User) authResult.getPrincipal();
+        response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + jwtUtil.makeAuthToken(user));
+        response.getOutputStream().write(objectMapper.writeValueAsBytes(user));
+        super.successfulAuthentication(request, response, chain, authResult);
+    }
+}

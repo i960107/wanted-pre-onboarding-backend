@@ -47,11 +47,15 @@ dependencies {
     //spring security
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    //jwt
+    implementation 'com.auth0:java-jwt:3.16.0'
+
     //test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
+    testImplementation 'org.springframework.security:spring-security-test'
     //restdocs
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+
 }
 
 tasks.test {
