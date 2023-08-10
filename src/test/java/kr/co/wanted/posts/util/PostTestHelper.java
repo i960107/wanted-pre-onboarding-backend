@@ -9,8 +9,28 @@ import java.util.List;
 import java.util.stream.IntStream;
 import kr.co.wanted.posts.domain.post.Post;
 import kr.co.wanted.posts.domain.post.PostImage;
+import kr.co.wanted.posts.domain.post.PostImageRepository;
+import kr.co.wanted.posts.domain.post.PostRepository;
+import kr.co.wanted.posts.domain.user.User;
+import kr.co.wanted.posts.exception.BaseException;
+import kr.co.wanted.posts.service.PostService;
+import kr.co.wanted.posts.web.dto.PostSaveRequestDto;
 
 public class PostTestHelper {
+    protected PostService postService;
+
+    public PostTestHelper(PostService postService) {
+        this.postService = postService;
+    }
+
+    public Post createPost(User user,
+                           String title,
+                           String content,
+                           String thumbnailUrl,
+                           List<String> imageUrls
+    ) throws BaseException {
+        return postService.save(user.getId(), new PostSaveRequestDto(title, content, imageUrls, thumbnailUrl));
+    }
 
     public static void assertPost(Post post, String title, String content,
                                   String thumbnailUrl, List<String> imageUrls) {
