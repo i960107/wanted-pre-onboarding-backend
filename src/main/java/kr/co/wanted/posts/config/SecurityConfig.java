@@ -4,6 +4,7 @@ package kr.co.wanted.posts.config;
 import kr.co.wanted.posts.config.jwt.JwtCheckFilter;
 import kr.co.wanted.posts.config.jwt.JwtLoginFilter;
 import kr.co.wanted.posts.config.jwt.JwtUtil;
+import kr.co.wanted.posts.exception.ExceptionHandlerFilter;
 import kr.co.wanted.posts.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -36,13 +37,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        JwtLoginFilter loginFilter = new JwtLoginFilter(authenticationManager(), jwtUtil);
+        JwtLoginFilter loginFilter = new JwtLoginFilter(authenticationManager(), jwtUtil, userService);
         JwtCheckFilter checkFilter = new JwtCheckFilter(authenticationManager(), userService, jwtUtil);
+        ExceptionHandlerFilter exceptionHandlerFilter = new ExceptionHandlerFilter();
 
         http
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(checkFilter, BasicAuthenticationFilter.class)
+                .addFilterBefore(exceptionHandlerFilter, JwtCheckFilter.class)
                 .csrf().disable();
     }
 

@@ -10,12 +10,18 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JwtUtil {
-    private final Algorithm key;
-    public final int TOKEN_EXPIRES_AFTER = 1000 * 2; //1분
-    public final int REFRESH_TOKEN_EXPIRES_AFTER = 1000 * 60; //1분
+    private final Algorithm KEY;
+    public final int TOKEN_EXPIRES_AFTER;
+    public final int REFRESH_TOKEN_EXPIRES_AFTER;
 
-    public JwtUtil(@Value("${jwt.secretkey}") String key) {
-        this.key = Algorithm.HMAC256(key);
+    public JwtUtil(
+            @Value("${jwt.secretkey}") String key,
+            @Value("${jwt.auth-token-time}") int authTime,
+            @Value("${jwt.refresh-token-time}") int refreshTime
+    ) {
+        this.KEY = Algorithm.HMAC256(key);
+        this.TOKEN_EXPIRES_AFTER = authTime;
+        this.REFRESH_TOKEN_EXPIRES_AFTER = refreshTime;
     }
 
 
@@ -23,19 +29,19 @@ public class JwtUtil {
         return JWT.create()
                 .withSubject(String.valueOf(user.getId()))
                 .withClaim("exp", Instant.now().getEpochSecond() + TOKEN_EXPIRES_AFTER)
-                .sign(key);
+                .sign(KEY);
     }
 
     public String makeRefreshToken(User user) {
         return JWT.create()
                 .withSubject(String.valueOf(user.getId()))
                 .withClaim("exp", Instant.now().getEpochSecond() + REFRESH_TOKEN_EXPIRES_AFTER)
-                .sign(key);
+                .sign(KEY);
     }
 
     public VerifyResult verify(String token) {
         try {
-            DecodedJWT verified = JWT.require(key)
+            DecodedJWT verified = JWT.require(KEY)
                     .build()
                     .verify(token);
             return VerifyResult

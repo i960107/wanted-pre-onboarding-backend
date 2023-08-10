@@ -27,12 +27,11 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         }
     }
 
-
     protected void setError(HttpServletResponse response, Exception exception) {
-        response.setStatus(400);
+        response.setStatus(401);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         try {
-            response.getWriter().write(objectMapper.writeValueAsString(exception.getMessage()));
+            response.getWriter().write(exception.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
         }

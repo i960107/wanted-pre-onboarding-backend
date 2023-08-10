@@ -18,3 +18,5 @@ spring:
 
 jwt:
   secretkey: WANTED_CHALLENGE_BACKEND_SECRETKEY
+  auth-token-time: 2
+  refresh-token-time: 10

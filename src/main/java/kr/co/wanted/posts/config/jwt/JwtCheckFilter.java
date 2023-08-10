@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import kr.co.wanted.posts.domain.user.User;
 import kr.co.wanted.posts.exception.BaseException;
 import kr.co.wanted.posts.service.UserService;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,7 +28,8 @@ public class JwtCheckFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        String bearer = request.getHeader(HttpHeaders.AUTHORIZATION);
+        String bearer = request.getHeader(JwtLoginFilter.AUTH_TOKEN_HEADER_NAME);
+        String refreshToken = request.getHeader(JwtLoginFilter.REFRESH_TOKEN_HEADER_NAME);
         if (bearer == null || !bearer.startsWith("Bearer ")) {
             chain.doFilter(request, response);
             return;
@@ -44,7 +44,7 @@ public class JwtCheckFilter extends BasicAuthenticationFilter {
                 throw new InvalidClaimException("user info in token claim is not valid");
             }
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    user.getUsername(),
+                    user.getId(),
                     null,
                     user.getAuthorities()
             );
