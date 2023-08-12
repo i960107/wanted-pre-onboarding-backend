@@ -2,6 +2,7 @@ package kr.co.wanted.posts.service;
 
 import java.util.Optional;
 import kr.co.wanted.posts.domain.user.User;
+import kr.co.wanted.posts.domain.user.UserAuthority;
 import kr.co.wanted.posts.domain.user.UserAuthorityRepository;
 import kr.co.wanted.posts.domain.user.UserRepository;
 import kr.co.wanted.posts.exception.BaseException;
@@ -22,9 +23,23 @@ public class UserService implements UserDetailsService {
     private final UserAuthorityRepository userAuthorityRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public User save(User user) {
+    public User save(User user) throws BaseException {
+        if (isDuplicated(user.getEmail())) {
+            throw new BaseException(BaseExceptions.USER_EMAIL_DUPLICATE);
+        }
         user.encryptPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        User persistedUser = userRepository.save(user);
+        user.addAuthority(UserAuthority.ROLE_USER);
+        return persistedUser;
+    }
+
+    public User getUserReference(Long userId) {
+        return userRepository.getOne(userId);
+    }
+
+
+    private boolean isDuplicated(String email) {
+        return userRepository.findByEmail(email).isPresent();
     }
 
     @Transactional(readOnly = true)
@@ -48,7 +63,7 @@ public class UserService implements UserDetailsService {
 
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(username)
+        User user = userRepository.findByEmailWithAuthorities(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
         if (!user.isEnabled()) {
             throw new UsernameNotFoundException(username);
