@@ -2,6 +2,7 @@ package kr.co.wanted.posts.web.dto;
 
 import java.util.List;
 import kr.co.wanted.posts.domain.post.Post;
+import kr.co.wanted.posts.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,9 +16,9 @@ public class PostSaveRequestDto {
     private List<String> imageUrls;
     private String thumbnailUrl;
 
-    public Post toEntity(Long authorId) {
+    public Post toEntity(User author) {
         return Post.builder()
-                .authorId(authorId)
+                .author(author)
                 .title(title)
                 .content(content)
                 .imageUrls(imageUrls)

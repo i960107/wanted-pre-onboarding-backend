@@ -21,9 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebSecurity
-@Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserService userService;
@@ -46,6 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(checkFilter, BasicAuthenticationFilter.class)
                 .addFilterBefore(exceptionHandlerFilter, JwtCheckFilter.class)
+                .addFilterBefore(exceptionHandlerFilter, JwtLoginFilter.class)
                 .csrf().disable();
     }
 

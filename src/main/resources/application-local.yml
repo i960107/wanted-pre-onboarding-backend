@@ -7,16 +7,22 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        ddl-auto: create
-      generate-ddl: true
+        ddl-auto: none
+    #        ddl-auto: create
+
+    #      generate-ddl: true
 
   datasource:
-    url: jdbc:h2:mem:test
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+    url: jdbc:mysql://wanted-backend-challenge.csdx0qwjpxpv.ap-northeast-2.rds.amazonaws.com:3306/wanted_backend_challenge
+    username: wanted
+    password: wanted2023
+#  datasource:
+#    url: jdbc:h2:mem:test
+#    username: sa
+#    password:
+#    driver-class-name: org.h2.Driver
 
 jwt:
   secretkey: WANTED_CHALLENGE_BACKEND_SECRETKEY
-  auth-token-time: 2
-  refresh-token-time: 10
+  auth-token-time: 300
+  refresh-token-time: 3600

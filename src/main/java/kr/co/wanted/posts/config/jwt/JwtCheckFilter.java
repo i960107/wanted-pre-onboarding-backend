@@ -44,12 +44,12 @@ public class JwtCheckFilter extends BasicAuthenticationFilter {
                 throw new InvalidClaimException("user info in token claim is not valid");
             }
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    user.getId(),
-                    null,
+                    user,
                     user.getAuthorities()
             );
             SecurityContextHolder.getContext().setAuthentication(authToken);
             chain.doFilter(request, response);
+            SecurityContextHolder.clearContext();
         } else {
             throw new TokenExpiredException("token is not valid");
         }

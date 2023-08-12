@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import kr.co.wanted.posts.domain.user.User;
 import kr.co.wanted.posts.exception.BaseException;
+import kr.co.wanted.posts.exception.BaseException.BaseExceptions;
 import kr.co.wanted.posts.service.UserService;
 import kr.co.wanted.posts.web.dto.UserLoginDto;
 import org.springframework.http.HttpHeaders;
@@ -54,12 +55,18 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
             return attemptAuthenticationWithRefreshToken(loginDto.getRefreshToken());
         }
 
-        String username = loginDto.getUsername();
+        String username = loginDto.getEmail();
         username = (username != null) ? username : "";
         username = username.trim();
+        if (!username.contains("@")) {
+            throw new RuntimeException(BaseExceptions.INVALID_EMAIL.getMessage());
+        }
 
         String password = loginDto.getPassword();
         password = (password != null) ? password : "";
+        if (password.length() < 8) {
+            throw new RuntimeException(BaseExceptions.INVALID_PASSWORD.getMessage());
+        }
 
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
 
@@ -98,7 +105,5 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         response.setHeader(AUTH_TOKEN_HEADER_NAME, "Bearer " + jwtUtil.makeAuthToken(user));
         response.setHeader(REFRESH_TOKEN_HEADER_NAME, jwtUtil.makeRefreshToken(user));
-        response.getOutputStream().write(objectMapper.writeValueAsBytes(user));
-        super.successfulAuthentication(request, response, chain, authResult);
     }
 }
