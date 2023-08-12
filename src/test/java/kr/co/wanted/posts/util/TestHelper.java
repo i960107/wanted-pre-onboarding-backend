@@ -1,64 +1,94 @@
 package kr.co.wanted.posts.util;
 
+import static java.lang.String.format;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import javax.servlet.ServletException;
+import kr.co.wanted.posts.config.jwt.JwtLoginFilter;
+import kr.co.wanted.posts.domain.post.PostImageRepository;
+import kr.co.wanted.posts.domain.post.PostRepository;
+import kr.co.wanted.posts.domain.user.UserAuthorityRepository;
+import kr.co.wanted.posts.domain.user.UserRepository;
+import kr.co.wanted.posts.service.PostService;
+import kr.co.wanted.posts.service.UserService;
+import kr.co.wanted.posts.web.dto.UserLoginDto;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.mock.web.MockFilterConfig;
-import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
-import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
-import org.springframework.security.config.BeanIds;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.filter.DelegatingFilterProxy;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 
-@SpringBootTest
-@ExtendWith(RestDocumentationExtension.class)
-@Import(RestDocsConfiguration.class)
-@Transactional
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class TestHelper {
     protected ObjectMapper objectMapper;
-
-    protected MockMvc mockMvc;
-
-    @Autowired
-    protected RestDocumentationResultHandler restDocs;
+    protected UserTestHelper userTestHelper;
+    protected PostTestHelper postTestHelper;
 
     @Autowired
-    private ResourceLoader resourceLoader;
+    protected TestRestTemplate testRestTemplate;
+
+    @LocalServerPort
+    protected int port;
+
+    @Autowired
+    protected ResourceLoader resourceLoader;
+
+    @Autowired
+    protected UserService userService;
+    @Autowired
+    protected PostService postService;
+    @Autowired
+    protected UserRepository userRepository;
+    @Autowired
+    protected UserAuthorityRepository userAuthorityRepository;
+    @Autowired
+    protected PostRepository postRepository;
+    @Autowired
+    protected PostImageRepository postImageRepository;
+
 
     @BeforeEach
-    void setUp(
-            final WebApplicationContext context,
-            final RestDocumentationContextProvider provider
-    ) throws ServletException {
+    void setUp() {
         this.objectMapper = new ObjectMapper();
-        DelegatingFilterProxy delegatingFilterProxy = new DelegatingFilterProxy();
-        delegatingFilterProxy.init(new MockFilterConfig(context.getServletContext(),
-                BeanIds.SPRING_SECURITY_FILTER_CHAIN));
-        this.mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(MockMvcRestDocumentation.documentationConfiguration(provider))
-                .addFilter(delegatingFilterProxy)
-                .alwaysDo(MockMvcResultHandlers.print())
-                .alwaysDo(restDocs)
-                .build();
+        this.userTestHelper = new UserTestHelper(userService);
+        this.postTestHelper = new PostTestHelper(postService);
+
+        this.postImageRepository.deleteAllInBatch();
+        this.postRepository.deleteAllInBatch();
+        this.userAuthorityRepository.deleteAllInBatch();
+        this.userRepository.deleteAllInBatch();
+    }
+
+
+    protected TokenBox getAuthToken() throws Exception {
+        userTestHelper.createUser("user");
+
+        UserLoginDto userLoginDto = new UserLoginDto("user@email.com", "user1111", null);
+
+        ResponseEntity response = testRestTemplate
+                .exchange("/login", HttpMethod.POST, new HttpEntity<>(userLoginDto), Void.class);
+
+        String authToken = response.getHeaders().get(JwtLoginFilter.AUTH_TOKEN_HEADER_NAME).get(0);
+        String refreshToken = response.getHeaders().get(JwtLoginFilter.REFRESH_TOKEN_HEADER_NAME).get(0);
+
+        return new TokenBox(authToken, refreshToken);
     }
 
     protected String readJson(final String path) throws IOException {
         return new String(
                 resourceLoader.getResource("classpath:" + path).getInputStream().readAllBytes(),
                 StandardCharsets.UTF_8);
+    }
+
+    protected URI uri(String path) throws URISyntaxException {
+        return new URI(format("http://localhost:%d%s", port, path));
     }
 }

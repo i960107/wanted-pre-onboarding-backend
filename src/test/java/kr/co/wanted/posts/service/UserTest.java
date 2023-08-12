@@ -45,12 +45,12 @@ public class UserTest {
     private void createUser() throws BaseException {
         userName = "user";
         authorities = List.of("USER");
-        user = userTestHelper.createUser(userName, authorities);
+        user = userTestHelper.createUser(userName);
     }
 
     @DisplayName("1. 권한이 없는 유저를 생성한다.")
     @Test
-    void test_save() {
+    void test_save() throws BaseException {
         String name = "test-user";
         String password = passwordEncoder.encode("test-user1111");
         String email = "test-user@email.com";

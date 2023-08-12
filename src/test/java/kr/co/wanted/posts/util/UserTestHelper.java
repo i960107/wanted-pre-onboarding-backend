@@ -17,16 +17,12 @@ public class UserTestHelper {
         this.userService = userService;
     }
 
-    public User createUser(String name, List<String> authorities) throws BaseException {
-        User user = userService.save(User.builder()
+    public User createUser(String name) throws BaseException {
+        return userService.save(User.builder()
                 .name(name)
                 .email(name + "@email.com")
                 .password(name + "1111")
                 .build());
-        for (String auth : authorities) {
-            userService.addAuthority(user.getId(), auth);
-        }
-        return user;
     }
 
     public static void assertUser(User user, String name, String email, String nickName, String password,
