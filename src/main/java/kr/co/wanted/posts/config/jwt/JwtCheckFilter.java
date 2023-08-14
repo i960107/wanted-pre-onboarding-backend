@@ -16,13 +16,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 public class JwtCheckFilter extends BasicAuthenticationFilter {
-    private UserService userService;
-    private JwtUtil jwtUtil;
+    private final UserService userService;
+    private final JwtUtil jwtUtil;
 
-    public JwtCheckFilter(AuthenticationManager authenticationManager, UserService userService, JwtUtil jwtUtil) {
+    public JwtCheckFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserService userService) {
         super(authenticationManager);
-        this.userService = userService;
         this.jwtUtil = jwtUtil;
+        this.userService = userService;
     }
 
     @Override
@@ -45,6 +45,7 @@ public class JwtCheckFilter extends BasicAuthenticationFilter {
             }
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     user,
+                    null,
                     user.getAuthorities()
             );
             SecurityContextHolder.getContext().setAuthentication(authToken);

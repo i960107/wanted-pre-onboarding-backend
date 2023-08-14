@@ -30,6 +30,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
     private final UserService userService;
 
+
     public JwtLoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserService userService) {
         super(authenticationManager);
         objectMapper = new ObjectMapper();
