@@ -12,7 +12,7 @@ import kr.co.wanted.posts.domain.user.User;
 import kr.co.wanted.posts.exception.BaseException;
 import kr.co.wanted.posts.exception.BaseException.BaseExceptions;
 import kr.co.wanted.posts.service.UserService;
-import kr.co.wanted.posts.web.dto.UserLoginDto;
+import kr.co.wanted.posts.web.dto.UserLoginRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -45,7 +45,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
         if (!request.getMethod().equals("POST")) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         }
-        UserLoginDto loginDto = null;
+        UserLoginRequest loginDto = null;
         try {
             loginDto = obtainLoginDto(request);
         } catch (IOException e) {
@@ -92,8 +92,8 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
         );
     }
 
-    private UserLoginDto obtainLoginDto(HttpServletRequest request) throws IOException {
-        return objectMapper.readValue(request.getInputStream(), UserLoginDto.class);
+    private UserLoginRequest obtainLoginDto(HttpServletRequest request) throws IOException {
+        return objectMapper.readValue(request.getInputStream(), UserLoginRequest.class);
     }
 
     @Override

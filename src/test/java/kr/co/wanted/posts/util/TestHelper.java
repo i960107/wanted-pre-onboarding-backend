@@ -8,13 +8,18 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import kr.co.wanted.posts.config.jwt.JwtLoginFilter;
+import kr.co.wanted.posts.domain.post.Post;
 import kr.co.wanted.posts.domain.post.PostImageRepository;
 import kr.co.wanted.posts.domain.post.PostRepository;
+import kr.co.wanted.posts.domain.user.User;
 import kr.co.wanted.posts.domain.user.UserAuthorityRepository;
 import kr.co.wanted.posts.domain.user.UserRepository;
+import kr.co.wanted.posts.exception.BaseException;
 import kr.co.wanted.posts.service.PostService;
 import kr.co.wanted.posts.service.UserService;
-import kr.co.wanted.posts.web.dto.UserLoginDto;
+import kr.co.wanted.posts.web.dto.PostSaveUpdateRequest;
+import kr.co.wanted.posts.web.dto.UserLoginRequest;
+import kr.co.wanted.posts.web.dto.UserSaveRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,8 +34,6 @@ import org.springframework.http.ResponseEntity;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class TestHelper {
     protected ObjectMapper objectMapper;
-    protected UserTestHelper userTestHelper;
-    protected PostTestHelper postTestHelper;
 
     @Autowired
     protected TestRestTemplate testRestTemplate;
@@ -45,6 +48,7 @@ public class TestHelper {
     protected UserService userService;
     @Autowired
     protected PostService postService;
+
     @Autowired
     protected UserRepository userRepository;
     @Autowired
@@ -58,8 +62,6 @@ public class TestHelper {
     @BeforeEach
     void setUp() {
         this.objectMapper = new ObjectMapper();
-        this.userTestHelper = new UserTestHelper(userService);
-        this.postTestHelper = new PostTestHelper(postService);
 
         this.postImageRepository.deleteAllInBatch();
         this.postRepository.deleteAllInBatch();
@@ -67,19 +69,42 @@ public class TestHelper {
         this.userRepository.deleteAllInBatch();
     }
 
+    protected User createUser(String name) throws BaseException {
+        return userService.save(User.builder()
+                .name(name)
+                .password(name + "111111")
+                .nickName(name + "love")
+                .email(name + "@email.com")
+                .build());
+    }
 
-    protected TokenBox getAuthToken() throws Exception {
-        userTestHelper.createUser("user");
+    protected TokenBox createUserAndGetAuthToken() throws Exception {
+        //create
+        UserSaveRequest saveRequestDto = objectMapper.readValue(
+                readJson("/json/user/create.json"),
+                UserSaveRequest.class);
+        User user = userService.save(saveRequestDto.toEntity());
+        //login
+        UserLoginRequest loginDto = objectMapper.readValue(
+                readJson("/json/user/login.json"),
+                UserLoginRequest.class);
 
-        UserLoginDto userLoginDto = new UserLoginDto("user@email.com", "user1111", null);
-
-        ResponseEntity response = testRestTemplate
-                .exchange("/login", HttpMethod.POST, new HttpEntity<>(userLoginDto), Void.class);
+        ResponseEntity<Void> response = testRestTemplate.exchange(
+                uri("/login"),
+                HttpMethod.POST,
+                new HttpEntity<>(loginDto),
+                Void.class);
 
         String authToken = response.getHeaders().get(JwtLoginFilter.AUTH_TOKEN_HEADER_NAME).get(0);
         String refreshToken = response.getHeaders().get(JwtLoginFilter.REFRESH_TOKEN_HEADER_NAME).get(0);
+        return new TokenBox(authToken, refreshToken, user);
+    }
 
-        return new TokenBox(authToken, refreshToken);
+    protected Post createPost(Long authorId) throws Exception {
+        URI uri = uri("/api/posts");
+        PostSaveUpdateRequest createRequestDto = objectMapper
+                .readValue(readJson("/json/post/create.json"), PostSaveUpdateRequest.class);
+        return postService.save(authorId, createRequestDto);
     }
 
     protected String readJson(final String path) throws IOException {

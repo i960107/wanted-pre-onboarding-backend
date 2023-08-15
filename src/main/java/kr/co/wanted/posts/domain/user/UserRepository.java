@@ -9,11 +9,12 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByIdAndEnabled(Long id, boolean enabled);
 
-    Optional<User> findByEmail(String username);
 
-    @Query("select u from User u join fetch UserAuthority a on u.id = a.id.userId where u.enabled=true and u.id = :userId")
+    @Query("select u from User u join fetch u.authorities a where u.enabled=true and u.id = :userId")
     Optional<User> findByIdWithAuthorities(Long userId);
 
-    @Query("select u from User u join fetch UserAuthority a on u.id = a.id.userId where u.enabled=true and u.email = :email")
+    @Query("select u from User u join fetch u.authorities a where u.enabled=true and u.email = :email")
     Optional<User> findByEmailWithAuthorities(String email);
+
+    Optional<User> findByEmailAndEnabled(String email, boolean enabled);
 }

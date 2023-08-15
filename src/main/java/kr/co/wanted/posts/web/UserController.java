@@ -3,7 +3,7 @@ package kr.co.wanted.posts.web;
 import javax.validation.Valid;
 import kr.co.wanted.posts.exception.BaseException;
 import kr.co.wanted.posts.service.UserService;
-import kr.co.wanted.posts.web.dto.UserSaveRequestDto;
+import kr.co.wanted.posts.web.dto.UserSaveRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,10 +20,10 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<Void> createUser(@Valid @RequestBody UserSaveRequestDto requestDto) throws BaseException {
+    public ResponseEntity<Void> createUser(@Valid @RequestBody UserSaveRequest requestDto) throws BaseException {
         Long userId = userService.save(requestDto.toEntity()).getId();
         return ResponseEntity
-                .status(HttpStatus.TEMPORARY_REDIRECT)
+                .status(HttpStatus.FOUND)
                 .header(HttpHeaders.LOCATION, "/")
                 .build();
     }

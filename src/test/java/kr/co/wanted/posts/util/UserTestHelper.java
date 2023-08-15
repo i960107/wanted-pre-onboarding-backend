@@ -22,6 +22,7 @@ public class UserTestHelper {
                 .name(name)
                 .email(name + "@email.com")
                 .password(name + "1111")
+                .nickName("name123")
                 .build());
     }
 

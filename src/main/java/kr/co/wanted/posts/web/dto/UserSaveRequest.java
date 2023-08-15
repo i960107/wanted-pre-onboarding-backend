@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Getter
-public class UserSaveRequestDto {
+public class UserSaveRequest {
     private String name;
     @NotNull(message = "이메일은 반드시 @를 포함해야합니다.")
     @Email(message = "이메일은 반드시 @를 포함해야합니다.")

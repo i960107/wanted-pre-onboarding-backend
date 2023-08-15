@@ -8,13 +8,14 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import kr.co.wanted.posts.config.jwt.JwtLoginFilter;
+import kr.co.wanted.posts.domain.user.User;
 import kr.co.wanted.posts.exception.BaseException;
 import kr.co.wanted.posts.exception.BaseException.BaseExceptions;
 import kr.co.wanted.posts.util.TestHelper;
 import kr.co.wanted.posts.util.TokenBox;
-import kr.co.wanted.posts.web.dto.PostSaveUpdateRequestDto;
-import kr.co.wanted.posts.web.dto.UserLoginDto;
-import kr.co.wanted.posts.web.dto.UserSaveRequestDto;
+import kr.co.wanted.posts.web.dto.PostSaveUpdateRequest;
+import kr.co.wanted.posts.web.dto.UserLoginRequest;
+import kr.co.wanted.posts.web.dto.UserSaveRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
@@ -24,20 +25,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-class UserControllerTest extends TestHelper {
+class UserTest extends TestHelper {
     @DisplayName("1.로그인을 하면 token을 두개 받는다.")
     @Test
     void test_login() throws Exception {
         //given
-        userTestHelper.createUser("user");
-
-        UserLoginDto userLoginDto = new UserLoginDto("user@email.com", "user1111", null);
+        UserSaveRequest saveRequestDto = objectMapper.readValue(
+                readJson("/json/user/create.json"),
+                UserSaveRequest.class);
+        User user = userService.save(saveRequestDto.toEntity());
 
         //when
-        String path = "/login";
+        UserLoginRequest loginDto = objectMapper.readValue(
+                readJson("/json/user/login.json"),
+                UserLoginRequest.class);
 
-        HttpEntity<UserLoginDto> request = new HttpEntity<>(userLoginDto);
-        ResponseEntity<Void> response = testRestTemplate.exchange(uri(path), HttpMethod.POST, request, Void.class);
+        ResponseEntity<Void> response = testRestTemplate.exchange(
+                uri("/login"),
+                HttpMethod.POST,
+                new HttpEntity<>(loginDto),
+                Void.class);
 
         //then
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -54,48 +61,58 @@ class UserControllerTest extends TestHelper {
 //
     }
 
-    @DisplayName("2.잘못된 형식으로 로그인을 시도한다.")
+    @DisplayName("2.잘못된 형식으로 로그인을 시도하면 에러가 난다.")
     @Test
     void test_login_fail() throws Exception {
-        userTestHelper.createUser("user");
+        UserSaveRequest saveRequestDto = objectMapper.readValue(
+                readJson("/json/user/create.json"),
+                UserSaveRequest.class);
+        User user = userService.save(saveRequestDto.toEntity());
 
-        String path = "/login";
+        URI uri = uri("/login");
 
-        UserLoginDto invalidEmailLoginDto = new UserLoginDto("user", "user1111", null);
+        UserLoginRequest invalidEmailLogin = objectMapper.readValue(
+                readJson("/json/user/login-invalid-email.json"),
+                UserLoginRequest.class);
+        ResponseEntity<String> invalidEmailResponse = testRestTemplate.exchange(
+                uri,
+                HttpMethod.POST,
+                new HttpEntity<>(invalidEmailLogin),
+                String.class);
 
-        HttpEntity<UserLoginDto> request = new HttpEntity<>(invalidEmailLoginDto);
-        ResponseEntity<String> response = testRestTemplate.exchange(uri(path), HttpMethod.POST, request, String.class);
+        assertEquals(HttpStatus.BAD_REQUEST, invalidEmailResponse.getStatusCode());
+        assertTrue(invalidEmailResponse.getBody().equals(BaseExceptions.INVALID_EMAIL.getMessage()));
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertTrue(response.getBody().contains(BaseExceptions.INVALID_EMAIL.getMessage()));
+        UserLoginRequest invalidPasswordLogin = objectMapper.readValue(
+                readJson("/json/user/login-invalid-password.json"),
+                UserLoginRequest.class);
+        ResponseEntity<String> invalidPasswordResponse = testRestTemplate.exchange(
+                uri,
+                HttpMethod.POST,
+                new HttpEntity<>(invalidPasswordLogin),
+                String.class);
 
-        UserLoginDto invalidPasswordRequestDto = new UserLoginDto("user@email.com", "123", null);
-
-        request = new HttpEntity<>(invalidPasswordRequestDto);
-        response = testRestTemplate.exchange(uri(path), HttpMethod.POST, request, String.class);
-
-        //then
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertTrue(response.getBody().contains(BaseExceptions.INVALID_PASSWORD.getMessage()));
+        assertEquals(HttpStatus.BAD_REQUEST, invalidPasswordResponse.getStatusCode());
+        assertTrue(invalidPasswordResponse.getBody().equals(BaseExceptions.INVALID_PASSWORD.getMessage()));
     }
 
 
-    @DisplayName("2. 만료된 토큰을 사용한다.")
+    @DisplayName("2. 만료된 토큰으로 인증할 수 없다.")
     @Test
     void test_invalid_token() throws Exception {
-        TokenBox tokenBox = getAuthToken();
+        TokenBox tokenBox = createUserAndGetAuthToken();
 
         Thread.sleep(3000);
 
-        PostSaveUpdateRequestDto requestDto = objectMapper
-                .readValue(readJson("/json/post/post.json"), PostSaveUpdateRequestDto.class);
+        PostSaveUpdateRequest requestDto = objectMapper
+                .readValue(readJson("/json/post/create.json"), PostSaveUpdateRequest.class);
 
         URI uri = uri("/api/posts");
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         headers.add(JwtLoginFilter.AUTH_TOKEN_HEADER_NAME, tokenBox.getAuthToken());
-        HttpEntity<PostSaveUpdateRequestDto> request = new HttpEntity<>(requestDto, headers);
+        HttpEntity<PostSaveUpdateRequest> request = new HttpEntity<>(requestDto, headers);
 
         ResponseEntity<Void> response = testRestTemplate
                 .exchange(uri, HttpMethod.POST, request, Void.class);
@@ -106,18 +123,18 @@ class UserControllerTest extends TestHelper {
     @DisplayName("3. 만료된 토큰을 갱신한다.")
     @Test
     void test_refresh_auth_token() throws Exception {
-        TokenBox tokenBox = getAuthToken();
+        TokenBox tokenBox = createUserAndGetAuthToken();
 
         Thread.sleep(3000);
 
-        UserLoginDto loginDto = new UserLoginDto(null, null, tokenBox.getRefreshToken());
+        UserLoginRequest loginDto = new UserLoginRequest(null, null, tokenBox.getRefreshToken());
 
         URI uri = uri("/login");
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
-        HttpEntity<UserLoginDto> request = new HttpEntity<>(loginDto, headers);
+        HttpEntity<UserLoginRequest> request = new HttpEntity<>(loginDto, headers);
 
         ResponseEntity<Void> response = testRestTemplate
                 .exchange(uri, HttpMethod.POST, request, Void.class);
@@ -131,12 +148,12 @@ class UserControllerTest extends TestHelper {
     @Test
     void test_save() throws IOException, URISyntaxException {
         String path = "/api/users";
-        UserSaveRequestDto requestDto = objectMapper
-                .readValue(readJson("/json/user/post.json"), UserSaveRequestDto.class);
+        UserSaveRequest requestDto = objectMapper
+                .readValue(readJson("/json/user/create.json"), UserSaveRequest.class);
 
         ResponseEntity<Void> response = testRestTemplate
                 .exchange(uri(path), HttpMethod.POST, new HttpEntity<>(requestDto), Void.class);
-        assertEquals(HttpStatus.TEMPORARY_REDIRECT, response.getStatusCode());
+        assertEquals(HttpStatus.FOUND, response.getStatusCode());
         assertEquals("/", response.getHeaders().getLocation().toString());
     }
 
@@ -144,8 +161,8 @@ class UserControllerTest extends TestHelper {
     @Test
     void test_user_create_fail_when_email_is_duplicated() throws IOException, URISyntaxException {
         String path = "/api/users";
-        UserSaveRequestDto requestDto = objectMapper
-                .readValue(readJson("/json/user/post.json"), UserSaveRequestDto.class);
+        UserSaveRequest requestDto = objectMapper
+                .readValue(readJson("/json/user/create.json"), UserSaveRequest.class);
 
         testRestTemplate
                 .exchange(uri(path), HttpMethod.POST, new HttpEntity<>(requestDto), Void.class);
@@ -161,8 +178,8 @@ class UserControllerTest extends TestHelper {
     @Test
     void test_user_create_fail_when_email_is_not_valid() throws IOException, URISyntaxException {
         String path = "/api/users";
-        UserSaveRequestDto requestDto = objectMapper
-                .readValue(readJson("/json/user/post-invalid-email.json"), UserSaveRequestDto.class);
+        UserSaveRequest requestDto = objectMapper
+                .readValue(readJson("/json/user/create-invalid-email.json"), UserSaveRequest.class);
 
         ResponseEntity<String> response = testRestTemplate
                 .exchange(uri(path), HttpMethod.POST, new HttpEntity<>(requestDto), String.class);
@@ -175,8 +192,8 @@ class UserControllerTest extends TestHelper {
     @Test
     void test_user_create_fail_when_password_is_short() throws IOException, URISyntaxException {
         String path = "/api/users";
-        UserSaveRequestDto requestDto = objectMapper
-                .readValue(readJson("/json/user/post-invalid-password.json"), UserSaveRequestDto.class);
+        UserSaveRequest requestDto = objectMapper
+                .readValue(readJson("/json/user/create-invalid-password.json"), UserSaveRequest.class);
 
         ResponseEntity<String> response = testRestTemplate
                 .exchange(uri(path), HttpMethod.POST, new HttpEntity<>(requestDto), String.class);

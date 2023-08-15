@@ -3,7 +3,6 @@ package kr.co.wanted.posts.domain.user;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Entity
 @Getter
 @EqualsAndHashCode(callSuper = false)
+@Builder
 @NoArgsConstructor
 public class User extends BaseEntity implements UserDetails {
     @Id
@@ -38,19 +38,10 @@ public class User extends BaseEntity implements UserDetails {
 
     private String password;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<UserAuthority> authorities = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private final List<UserAuthority> authorities = new ArrayList<>();
 
     private boolean enabled;
-
-    @Builder
-    public User(String name, String email, String nickName, String password) {
-        this.name = name;
-        this.email = email;
-        this.nickName = nickName;
-        this.password = password;
-        this.enabled = true;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -85,6 +76,16 @@ public class User extends BaseEntity implements UserDetails {
         this.password = encryptedPassword;
     }
 
+    @Builder
+    public User(Long id, String name, String email, String nickName, String password, boolean enabled) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.nickName = nickName;
+        this.password = password;
+        this.enabled = true;
+    }
+
     public boolean hasAuthority(String authority) {
         return this.authorities.stream()
                 .anyMatch(auth -> auth.getAuthority().equals(authority));
@@ -101,5 +102,4 @@ public class User extends BaseEntity implements UserDetails {
                 .id(new UserAuthorityId(this.id, authority))
                 .build());
     }
-
 }

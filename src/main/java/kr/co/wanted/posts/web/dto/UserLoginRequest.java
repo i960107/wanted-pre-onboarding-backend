@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserLoginDto {
+public class UserLoginRequest {
     @NotNull(message = "이메일은 반드시 @를 포함해야합니다.")
     @Email(message = "이메일은 반드시 @를 포함해야합니다.")
     private String email;

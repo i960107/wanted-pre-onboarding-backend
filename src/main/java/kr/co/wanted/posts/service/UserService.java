@@ -23,6 +23,7 @@ public class UserService implements UserDetailsService {
     private final UserAuthorityRepository userAuthorityRepository;
     private final PasswordEncoder passwordEncoder;
 
+
     public User save(User user) throws BaseException {
         if (isDuplicated(user.getEmail())) {
             throw new BaseException(BaseExceptions.USER_EMAIL_DUPLICATE);
@@ -39,7 +40,7 @@ public class UserService implements UserDetailsService {
 
 
     private boolean isDuplicated(String email) {
-        return userRepository.findByEmail(email).isPresent();
+        return userRepository.findByEmailAndEnabled(email, true).isPresent();
     }
 
     @Transactional(readOnly = true)
@@ -61,13 +62,11 @@ public class UserService implements UserDetailsService {
     }
 
 
+    @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByEmailWithAuthorities(username)
-                .orElseThrow(() -> new UsernameNotFoundException(username));
-        if (!user.isEnabled()) {
-            throw new UsernameNotFoundException(username);
-        }
+                .orElseThrow(() -> new UsernameNotFoundException(BaseExceptions.USER__NOT_FOUND.getMessage()));
         return user;
     }
 
