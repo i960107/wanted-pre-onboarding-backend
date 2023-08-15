@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import kr.co.wanted.posts.config.jwt.JwtLoginFilter;
 import kr.co.wanted.posts.util.TestHelper;
 import kr.co.wanted.posts.util.TokenBox;
-import kr.co.wanted.posts.web.dto.PresignedKeyDto;
+import kr.co.wanted.posts.web.dto.PresignedKeyResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
@@ -30,11 +30,11 @@ class PostImageTest extends TestHelper {
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
         headers.add(JwtLoginFilter.AUTH_TOKEN_HEADER_NAME, tokenBox.getAuthToken());
 
-        ResponseEntity<PresignedKeyDto> response = testRestTemplate.exchange(
+        ResponseEntity<PresignedKeyResponse> response = testRestTemplate.exchange(
                 uri("/api/images?fileName=" + fileName),
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
-                PresignedKeyDto.class);
+                PresignedKeyResponse.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody().getPresignedKey());
         assertTrue(response.getBody().getExpiresAt().isAfter(LocalDateTime.now()));

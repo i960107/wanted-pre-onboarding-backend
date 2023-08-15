@@ -67,11 +67,12 @@ public class Post extends BaseEntity {
     }
 
     public void createOrChangeImages(List<String> imageFileNames) {
+        if(imageFileNames == null) return;
         if (this.getImages().size() != 0) {
             this.images.forEach(PostImage::delete);
         }
 
-        IntStream.rangeClosed(1, images.size())
+        IntStream.rangeClosed(1, imageFileNames.size())
                 .forEach(index -> {
                     this.images.add(PostImage.builder()
                             .post(this)

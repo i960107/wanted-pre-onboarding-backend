@@ -5,7 +5,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import java.time.Instant;
 import java.util.Date;
-import kr.co.wanted.posts.web.dto.PresignedKeyDto;
+import kr.co.wanted.posts.web.dto.PresignedKeyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,11 +26,11 @@ public class PostImageService {
     }
 
 
-    public PresignedKeyDto getPresignedUrl(String filename) {
+    public PresignedKeyResponse getPresignedUrl(String filename) {
         GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(bucket, filename)
                 .withMethod(HttpMethod.PUT)
                 .withExpiration(Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond() + KEY_EXPIRES_AFTER)));
-        return PresignedKeyDto.builder()
+        return PresignedKeyResponse.builder()
                 .expiresAt(request.getExpiration())
                 .presignedKey(s3Client.generatePresignedUrl(request).toString())
                 .build();

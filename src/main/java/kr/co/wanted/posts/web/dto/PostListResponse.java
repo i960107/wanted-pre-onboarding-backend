@@ -12,10 +12,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostListResponse {
-    private List<PostSimpleResponse> posts;
     private int pageNo;
     private int pageSize;
     private long totalElements;
     private int totalPages;
     private boolean last;
+    private List<PostSimpleResponse> posts;
 }

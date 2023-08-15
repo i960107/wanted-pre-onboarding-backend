@@ -1,11 +1,9 @@
 package kr.co.wanted.posts.web;
 
 import kr.co.wanted.posts.service.PostImageService;
-import kr.co.wanted.posts.web.dto.PresignedKeyDto;
+import kr.co.wanted.posts.web.dto.PresignedKeyResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,7 +17,7 @@ public class PostImageController {
 
     @GetMapping()
     @PreAuthorize("hasRole('USER')")
-    public PresignedKeyDto getPresigendKey(@RequestParam String fileName) {
+    public PresignedKeyResponse getPresigendKey(@RequestParam String fileName) {
         return postImageService.getPresignedUrl(fileName);
     }
 

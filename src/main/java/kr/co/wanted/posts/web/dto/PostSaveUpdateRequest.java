@@ -10,19 +10,30 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostSaveRequestDto {
+public class PostSaveUpdateRequest {
     private String title;
     private String content;
-    private List<String> imageUrls;
-    private String thumbnailUrl;
+    private List<String> imageFileNames;
+    private String thumbnail;
 
     public Post toEntity(User author) {
         return Post.builder()
                 .author(author)
                 .title(title)
                 .content(content)
-                .imageUrls(imageUrls)
-                .thumbnailUrl(thumbnailUrl)
+                .thumbnail(thumbnail)
+                .imageFileNames(imageFileNames)
+                .build();
+    }
+
+    public Post toEntity(Long postId, User author) {
+        return Post.builder()
+                .postId(postId)
+                .author(author)
+                .title(title)
+                .content(content)
+                .imageFileNames(imageFileNames)
+                .thumbnail(thumbnail)
                 .build();
     }
 
