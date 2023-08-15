@@ -1,9 +1,9 @@
 {
-    "title" : "수정 전 타이틀",
-    "content" : "수정전 컨텐츠",
-    "imageUrls" : [
-        "imageUrl1-before",
-        "imageUrl2-before"
-    ],
-    "thumbnailUrl" : "thumbnailurl-before"
+  "title": "수정 전 타이틀",
+  "content": "수정전 컨텐츠",
+  "imageFileNames": [
+    "image1-before",
+    "image2-before"
+  ],
+  "thumbnail": "thumbnail-before"
 }

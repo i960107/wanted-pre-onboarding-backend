@@ -15,12 +15,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @AllArgsConstructor
-public class PresignedKeyDto {
+public class PresignedKeyResponse {
     private String presignedKey;
     private LocalDateTime expiresAt;
 
     @Builder
-    public PresignedKeyDto(String presignedKey, Date expiresAt) {
+    public PresignedKeyResponse(String presignedKey, Date expiresAt) {
         this.presignedKey = presignedKey;
         this.expiresAt = Instant.ofEpochMilli(expiresAt.getTime())
                 .atZone(ZoneId.systemDefault())
