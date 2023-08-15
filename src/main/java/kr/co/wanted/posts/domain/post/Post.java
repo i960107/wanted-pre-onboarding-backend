@@ -1,16 +1,19 @@
 package kr.co.wanted.posts.domain.post;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import kr.co.wanted.posts.domain.BaseEntity;
 import kr.co.wanted.posts.domain.user.User;
 import lombok.Builder;
@@ -20,7 +23,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = false, of = {"id"})
 @NoArgsConstructor
 public class Post extends BaseEntity {
     @Id
@@ -30,51 +33,60 @@ public class Post extends BaseEntity {
 
     private String title;
 
-    private Long authorId;
-
-    @Transient
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
     private User author;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
+    @OrderBy(value = "index ASC")
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostImage> images = new ArrayList<>();
 
-    private String thumbnailUrl;
+    private String thumbnail;
 
     private boolean enabled;
 
 
     @Builder
-    public Post(String title,
-                Long authorId,
-                User author,
-                String content,
-                List<String> imageUrls,
-                String thumbnailUrl) {
+    public Post(
+            Long postId,
+            User author,
+            String title,
+            String content,
+            List<String> imageFileNames,
+            String thumbnail) {
+        this.id = postId;
         this.title = title;
-        this.authorId = authorId;
         this.author = author;
         this.content = content;
-        updateImages(imageUrls);
-        this.thumbnailUrl = thumbnailUrl;
+        createOrChangeImages(imageFileNames);
+        this.thumbnail = thumbnail;
         this.enabled = true;
     }
 
-    public void updateImages(List<String> imageUrls) {
+    public void createOrChangeImages(List<String> imageFileNames) {
         if (this.getImages().size() != 0) {
-            this.images.forEach(PostImage::deleteImage);
+            this.images.forEach(PostImage::delete);
         }
 
-        IntStream.rangeClosed(1, imageUrls.size())
+        IntStream.rangeClosed(1, images.size())
                 .forEach(index -> {
                     this.images.add(PostImage.builder()
                             .post(this)
                             .index(index)
-                            .imageUrl(imageUrls.get(index - 1))
+                            .filename(imageFileNames.get(index - 1))
                             .build());
                 });
     }
 
+    public void delete() {
+        this.enabled = false;
+        deleteImages();
+    }
+
+    public void deleteImages() {
+        this.images.forEach(image -> image.delete());
+    }
 }

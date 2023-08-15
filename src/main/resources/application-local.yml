@@ -8,21 +8,27 @@ spring:
       hibernate:
         format_sql: true
         ddl-auto: none
-    #        ddl-auto: create
-
-    #      generate-ddl: true
 
   datasource:
     url: jdbc:mysql://wanted-backend-challenge.csdx0qwjpxpv.ap-northeast-2.rds.amazonaws.com:3306/wanted_backend_challenge
     username: wanted
     password: wanted2023
-#  datasource:
-#    url: jdbc:h2:mem:test
-#    username: sa
-#    password:
-#    driver-class-name: org.h2.Driver
 
 jwt:
   secretkey: WANTED_CHALLENGE_BACKEND_SECRETKEY
   auth-token-time: 300
   refresh-token-time: 3600
+
+cloud:
+  aws:
+    stack.auto: false
+    region:
+      auto: false
+      static: ap-northeast-2
+    s3:
+      bucket: wanted-2023-backend-challenge-bucket
+      key-time: 120
+    credentials:
+      instanceProfile: false
+      access-key: AKIA4H5Y33C4HIUCEIM5
+      secret-key: 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

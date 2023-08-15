@@ -1,0 +1,9 @@
+{
+    "title" : "수정 후 타이틀",
+    "content" : "수정 후 컨텐츠",
+    "imageUrls" : [
+        "imageUrl1-after",
+        "imageUrl2-after"
+    ],
+    "thumbnailUrl" : "thumbnailurl-after"
+}
