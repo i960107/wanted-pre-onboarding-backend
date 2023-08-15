@@ -1,0 +1,20 @@
+[source,options="nowrap"]
+----
+{
+  "id" : 2,
+  "title" : "수정 전 타이틀",
+  "content" : "수정전 컨텐츠",
+  "authorNickname" : "henry",
+  "authorId" : 2,
+  "images" : [ {
+    "index" : 1,
+    "filename" : "image1-before"
+  }, {
+    "index" : 2,
+    "filename" : "image2-before"
+  } ],
+  "thumbnail" : "thumbnail-before",
+  "enabled" : true,
+  "lastUpdatedAt" : "2023-08-16T01:33:32.201156"
+}
+----

@@ -1,0 +1,8 @@
+.+/api/posts/{postId}+
+|===
+|Parameter|Description
+
+|`+postId+`
+|조회할 포스트 id
+
+|===

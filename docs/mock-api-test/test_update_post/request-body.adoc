@@ -1,0 +1,9 @@
+[source,options="nowrap"]
+----
+{
+  "title" : "수정 후 타이틀",
+  "content" : "수정 후 컨텐츠",
+  "imageFileNames" : [ "image-after1", "image-after2" ],
+  "thumbnail" : "thumbnail-after"
+}
+----

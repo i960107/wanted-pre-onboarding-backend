@@ -1,0 +1,8 @@
+[source,bash]
+----
+$ curl 'http://ec2-52-78-148-180.ap-northeast-2.compute.amazonaws.com:8080/login' -i -X POST \
+    -H 'Content-Type: application/json' \
+    -d '{
+  "refreshToken" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI5IiwiZXhwIjoxNjkyMTIwODEzfQ.5k7SAWWCU-p9Zk1fyxXWc9VcLdYrih9mJVEG1m-YGe4"
+}'
+----

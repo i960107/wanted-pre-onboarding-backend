@@ -1,0 +1,48 @@
+|===
+|Path|Type|Description
+
+|`+id+`
+|`+Number+`
+|조회한 포스트 id
+
+|`+title+`
+|`+String+`
+|타이틀
+
+|`+content+`
+|`+String+`
+|내용
+
+|`+authorNickname+`
+|`+String+`
+|작성자 닉네임
+
+|`+authorId+`
+|`+Number+`
+|작성자 id
+
+|`+images[]+`
+|`+Array+`
+|이미지 리스트
+
+|`+images[].filename+`
+|`+String+`
+|이미지 파일 이름
+
+|`+images[].index+`
+|`+Number+`
+|이미지 파일 노출 순서 1부터 시작
+
+|`+thumbnail+`
+|`+String+`
+|썸네일 파일 이름
+
+|`+enabled+`
+|`+Boolean+`
+|포스트 활성화 여부
+
+|`+lastUpdatedAt+`
+|`+String+`
+|마지막으로 수정된 날짜
+
+|===

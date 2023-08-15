@@ -1,0 +1,14 @@
+[source,http,options="nowrap"]
+----
+POST /api/users HTTP/1.1
+Content-Type: application/json
+Content-Length: 113
+Host: ec2-52-78-148-180.ap-northeast-2.compute.amazonaws.com:8080
+
+{
+  "name" : "ruby kim",
+  "email" : "ruby@gmail.com",
+  "nickName" : "ruby",
+  "password" : "rubypassword1111"
+}
+----

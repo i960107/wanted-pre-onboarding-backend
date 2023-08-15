@@ -1,0 +1,12 @@
+[source,http,options="nowrap"]
+----
+POST /login HTTP/1.1
+Content-Type: application/json
+Content-Length: 69
+Host: ec2-52-78-148-180.ap-northeast-2.compute.amazonaws.com:8080
+
+{
+  "email" : "henry@gmail.com",
+  "password" : "henrypassword1111"
+}
+----

@@ -1,0 +1,10 @@
+|===
+|Parameter|Description
+
+|`+size+`
+|페이지 사이즈 default 10
+
+|`+page+`
+|페이지 번호 0부터 시작 default 0
+
+|===

@@ -1,0 +1,4 @@
+[source,bash]
+----
+$ curl 'http://ec2-52-78-148-180.ap-northeast-2.compute.amazonaws.com:8080/api/posts?size=2&page=0' -i -X GET
+----

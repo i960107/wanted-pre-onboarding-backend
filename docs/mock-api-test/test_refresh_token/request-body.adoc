@@ -1,0 +1,6 @@
+[source,options="nowrap"]
+----
+{
+  "refreshToken" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI5IiwiZXhwIjoxNjkyMTIwODEzfQ.5k7SAWWCU-p9Zk1fyxXWc9VcLdYrih9mJVEG1m-YGe4"
+}
+----

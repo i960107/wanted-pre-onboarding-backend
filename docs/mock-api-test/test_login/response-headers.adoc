@@ -1,0 +1,10 @@
+|===
+|Name|Description
+
+|`+auth_token+`
+|jwt 인증 토큰 유효기간 5분
+
+|`+refresh_token+`
+|jwt 리프레시 토큰 유효기간 1시간
+
+|===

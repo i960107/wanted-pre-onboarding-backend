@@ -1,0 +1,30 @@
+[source,http,options="nowrap"]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Content-Length: 372
+
+{
+  "id" : 2,
+  "title" : "수정 전 타이틀",
+  "content" : "수정전 컨텐츠",
+  "authorNickname" : "henry",
+  "authorId" : 2,
+  "images" : [ {
+    "index" : 1,
+    "filename" : "image1-before"
+  }, {
+    "index" : 2,
+    "filename" : "image2-before"
+  } ],
+  "thumbnail" : "thumbnail-before",
+  "enabled" : true,
+  "lastUpdatedAt" : "2023-08-16T01:33:32.201156"
+}
+----

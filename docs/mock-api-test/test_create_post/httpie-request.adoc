@@ -1,0 +1,11 @@
+[source,bash]
+----
+$ echo '{
+  "title" : "수정 전 타이틀",
+  "content" : "수정전 컨텐츠",
+  "imageFileNames" : [ "image1-before", "image2-before" ],
+  "thumbnail" : "thumbnail-before"
+}' | http POST 'http://ec2-52-78-148-180.ap-northeast-2.compute.amazonaws.com:8080/api/posts' \
+    'Content-Type:application/json' \
+    'auth_token:Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1IiwiZXhwIjoxNjkyMTE3MjE0fQ.yl7c5DJhRQRw2LXy_eJ_WJbqjkz3jnJLrnMvamNLw74'
+----

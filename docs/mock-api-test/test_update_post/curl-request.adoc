@@ -1,0 +1,12 @@
+[source,bash]
+----
+$ curl 'http://ec2-52-78-148-180.ap-northeast-2.compute.amazonaws.com:8080/api/posts/4' -i -X PUT \
+    -H 'Content-Type: application/json' \
+    -H 'auth_token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0IiwiZXhwIjoxNjkyMTE3MjE0fQ.8vbIps4c65GkIxEL7vgUF1PTEG2bFEeVYAx7499Z9og' \
+    -d '{
+  "title" : "수정 후 타이틀",
+  "content" : "수정 후 컨텐츠",
+  "imageFileNames" : [ "image-after1", "image-after2" ],
+  "thumbnail" : "thumbnail-after"
+}'
+----

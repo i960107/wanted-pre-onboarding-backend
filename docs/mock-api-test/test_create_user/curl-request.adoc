@@ -1,0 +1,11 @@
+[source,bash]
+----
+$ curl 'http://ec2-52-78-148-180.ap-northeast-2.compute.amazonaws.com:8080/api/users' -i -X POST \
+    -H 'Content-Type: application/json' \
+    -d '{
+  "name" : "ruby kim",
+  "email" : "ruby@gmail.com",
+  "nickName" : "ruby",
+  "password" : "rubypassword1111"
+}'
+----

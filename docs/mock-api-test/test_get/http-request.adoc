@@ -1,0 +1,6 @@
+[source,http,options="nowrap"]
+----
+GET /api/posts/2 HTTP/1.1
+Host: ec2-52-78-148-180.ap-northeast-2.compute.amazonaws.com:8080
+
+----

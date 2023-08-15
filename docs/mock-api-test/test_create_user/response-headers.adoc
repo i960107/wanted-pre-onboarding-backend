@@ -1,0 +1,7 @@
+|===
+|Name|Description
+
+|`+Location+`
+|새로 생성된 리소스 주소
+
+|===

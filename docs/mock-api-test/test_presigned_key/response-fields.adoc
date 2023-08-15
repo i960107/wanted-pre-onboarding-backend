@@ -1,0 +1,12 @@
+|===
+|Path|Type|Description
+
+|`+presignedKey+`
+|`+String+`
+|s3 파일 업로드를 위한 presignedKey 유효기간 2분
+
+|`+expiresAt+`
+|`+String+`
+|만료시간
+
+|===

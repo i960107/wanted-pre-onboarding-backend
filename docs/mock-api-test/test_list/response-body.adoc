@@ -1,0 +1,19 @@
+[source,options="nowrap"]
+----
+{
+  "pageNo" : 0,
+  "pageSize" : 2,
+  "totalElements" : 1,
+  "totalPages" : 1,
+  "last" : true,
+  "posts" : [ {
+    "postId" : 1,
+    "title" : "수정 전 타이틀",
+    "content" : "수정전 컨텐츠",
+    "thumbnail" : "thumbnail-before",
+    "authorId" : 1,
+    "authorNickname" : "henry",
+    "lastUpdatedAt" : "2023-08-16T01:33:31.916106"
+  } ]
+}
+----

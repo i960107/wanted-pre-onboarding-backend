@@ -83,10 +83,16 @@ tasks.asciidoctor {
 }
 
 tasks.bootJar {
+    dependsOn 'copyDocument'
+}
+
+tasks.build {
+    dependsOn 'copyDocument'
+}
+
+task copyDocument(type: Copy) {
     dependsOn asciidoctor
-    copy {
-        from "${asciidoctor.outputDir}"
-        into "static/docs"
-    }
+    from snippetsDir
+    into "docs/"
 }
 

@@ -1,0 +1,12 @@
+|===
+|Path|Type|Description
+
+|`+email+`
+|`+String+`
+|이메일 @ 필수 포함
+
+|`+password+`
+|`+String+`
+|패스워드 최소 8자리
+
+|===

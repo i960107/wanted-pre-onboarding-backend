@@ -1,0 +1,6 @@
+[source,bash]
+----
+$ curl 'http://ec2-52-78-148-180.ap-northeast-2.compute.amazonaws.com:8080/api/posts/3' -i -X DELETE \
+    -H 'Content-Type: application/json' \
+    -H 'auth_token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzIiwiZXhwIjoxNjkyMTE3MjE0fQ.v5D8b2-Q9Ky_cznXz13LZAEnVlkMhC81nlLZFbazHwI'
+----

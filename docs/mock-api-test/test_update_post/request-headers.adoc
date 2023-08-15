@@ -1,0 +1,7 @@
+|===
+|Name|Description
+
+|`+auth_token+`
+|유효한 jwt 인증 토큰
+
+|===

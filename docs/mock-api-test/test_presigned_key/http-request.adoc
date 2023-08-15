@@ -1,0 +1,8 @@
+[source,http,options="nowrap"]
+----
+GET /api/images?fileName=testfile1.jpg HTTP/1.1
+Content-Type: application/json
+auth_token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI4IiwiZXhwIjoxNjkyMTE3MjE1fQ.ztRmvXw6u3k4-oKknXbq4NNrDTzMIn6SO1j5AG0K-PM
+Host: ec2-52-78-148-180.ap-northeast-2.compute.amazonaws.com:8080
+
+----
