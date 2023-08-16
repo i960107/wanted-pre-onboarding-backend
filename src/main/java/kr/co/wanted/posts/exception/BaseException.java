@@ -12,6 +12,7 @@ public class BaseException extends Exception {
     private int code;
     private String message;
 
+
     public BaseException(BaseExceptions exception) {
         this.code = exception.getCode();
         this.message = exception.getMessage();

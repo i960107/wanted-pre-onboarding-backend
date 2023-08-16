@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private static final String POST_RESOURCE_LOCATION = "/api/posts/";
 
     @PostMapping
     public ResponseEntity<Void> createUser(@Valid @RequestBody UserSaveRequest requestDto) throws BaseException {

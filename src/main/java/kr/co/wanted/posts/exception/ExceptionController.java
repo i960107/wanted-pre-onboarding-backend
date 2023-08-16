@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ExceptionController {
 
     @ExceptionHandler(BaseException.class)
-    public ResponseEntity<BaseException> baseException(BaseException exception) {
+    public ResponseEntity<BaseExceptionResponse> baseException(BaseException exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(exception);
+                .body(new BaseExceptionResponse(exception.getCode(), exception.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
