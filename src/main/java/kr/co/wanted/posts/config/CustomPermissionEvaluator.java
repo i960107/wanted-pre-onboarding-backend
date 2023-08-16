@@ -9,6 +9,7 @@ import kr.co.wanted.posts.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.PermissionEvaluator;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +35,9 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
             post = postService.findById((Long) targetId);
         } catch (BaseException exception) {
             throw new AccessDeniedException("존재하지 않는 게시물입니다.");
+        }
+        if (!authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+            return false;
         }
 
         User user = (User) authentication.getPrincipal();

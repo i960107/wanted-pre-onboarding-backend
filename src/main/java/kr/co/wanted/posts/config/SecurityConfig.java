@@ -22,7 +22,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserService userService;
     private final JwtUtil jwtUtil;
 
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         JwtLoginFilter loginFilter = new JwtLoginFilter(authenticationManager(), jwtUtil, userService);
@@ -41,7 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().requestMatchers(
-                PathRequest.toH2Console(),
+//                PathRequest.toH2Console(),
                 PathRequest.toStaticResources().atCommonLocations()
         );
     }
