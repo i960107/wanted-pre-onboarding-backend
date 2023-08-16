@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    active: local
+
+  output:
+    ansi:
+      enabled: always
+
